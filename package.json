@@ -1,0 +1,23 @@
+{
+  "name": "i18n-kit",
+  "version": "0.0.0",
+  "description": "Library provides basic i18n functions for JavaScript apps",
+  "main": "dist/ui-kit.js",
+  "scripts": {
+    "build:dev": "webpack --env=dev --progress --hide-modules",
+    "build:dist": "rimraf dist && webpack --env=prod --progress --profile --colors --hide-modules",
+    "watch": "webpack --env=dev --watch --progress --colors --hide-modules",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Roman Duhr <roman.duhr@meplato.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "eslint": "^4.11.0",
+    "prettier-eslint": "^8.2.2",
+    "rimraf": "^2.6.2",
+    "webpack": "^3.8.1",
+    "webpack-merge": "^4.1.1"
+  }
+}
