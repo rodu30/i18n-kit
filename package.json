@@ -1,7 +1,7 @@
 {
   "name": "i18n-kit",
   "version": "0.0.0",
-  "description": "Library provides basic i18n functions for JavaScript apps",
+  "description": "Library to provide basic i18n functions for JavaScript apps",
   "main": "dist/ui-kit.js",
   "scripts": {
     "build:dev": "webpack --env=dev --progress --hide-modules",
@@ -11,13 +11,41 @@
   },
   "author": "Roman Duhr <roman.duhr@meplato.com>",
   "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/rodu30/i18n-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rodu30/i18n-kit/issues"
+  },
+  "homepage": "https://github.com/rodu30/i18n-kit#readme",
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "eslint": "^4.11.0",
     "prettier-eslint": "^8.2.2",
     "rimraf": "^2.6.2",
     "webpack": "^3.8.1",
     "webpack-merge": "^4.1.1"
+  },
+  "babel": {
+    "plugins": ["transform-class-properties", "transform-object-rest-spread"],
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "browsers": ["last 2 versions"]
+          },
+          "modules": false,
+          "loose": true,
+          "useBuiltIns": true
+        }
+      ]
+    ]
   }
 }
