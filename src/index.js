@@ -1,3 +1,5 @@
+// --- Base API ---
+
 /**
  * Formats a given number
  * @param {string} locale 
@@ -33,7 +35,7 @@ export const formatNumber = (locale, number, options = undefined) =>
  * Formats a given date object
  * @param {string} locale
  * @param {object} date javaScript Date object: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
- * @param {*} options see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
+ * @param {object} options see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
                       localeMatcher
                       The locale matching algorithm to use. Possible values are "lookup" and "best fit"; the default is "best fit". For information about this option, see the Intl page.
                       timeZone
@@ -77,3 +79,130 @@ export const formatNumber = (locale, number, options = undefined) =>
  */
 export const formatDateTime = (locale, date, options = undefined) =>
   new Intl.DateTimeFormat(locale, options).format(date);
+
+// - Format text -
+
+/**
+ * Generates a string from the provided message containing placeholders (according to ICU standard) and an object with variables
+ * @param {string} message
+ * @param {object} vars
+ * @returns {string}
+ */
+const generateStringWithVars = (message, vars = {}) => {
+  let newMessage = message;
+  Object.entries(vars).forEach(([key, value]) => {
+    const pattern = new RegExp(`{${key}}`, 'g');
+    newMessage = newMessage.replace(pattern, value);
+  });
+  return newMessage;
+};
+
+/**
+ * Formats a given default string or it`s translation (according to locale) and optional placeholder
+ * @param {string} locale
+ * @param {object} messages
+ * @param {string} defaultMessage
+ * @param {object} options:
+ *                 {object} vars
+ *                 {string} defaultLocale if provided, the defaultMessage will automatically be added to this locale
+ *                 {string} description
+ *                 {boolean} noWarnings
+ * @returns {string}
+ */
+export const formatMessage = (locale, messages, defaultMessage, options = {}) => {
+  // Deconstruct options
+  const { vars, defaultLocale, description, noWarnings } = options;
+
+  // Get complete string with vars
+  const defaultWithVars = generateStringWithVars(defaultMessage, vars);
+
+  // If defaultLocale is set, add defaultMessage to messages of default locale
+  if (defaultLocale) {
+    addNewMessage(messages, defaultLocale, defaultMessage);
+  }
+
+  // If requested locale doesn`t exist yet return default (+ warning)
+  if (!messages.hasOwnProperty(locale)) {
+    console.warn(
+      `Warning: Displaying default message\nThere are no translations for "${
+        locale
+      }". Please add it to your list of locales.`
+    );
+    return defaultWithVars;
+  }
+
+  const messageKey = generateKeyFromString(defaultMessage);
+  const existingMessage = Object.entries(messages[locale]).find(
+    ([key, value]) => key === messageKey
+  );
+
+  // If message key doesn`t exist in requested locale...
+  if (!existingMessage) {
+    // ...and locale is default locale, returns default (no warning b/c message was already added)
+    if (defaultLocale && defaultLocale === locale) return defaultWithVars;
+
+    // ...return default (+ warning)
+    console.warn(
+      `Warning: Displaying default message\n"${
+        defaultWithVars
+      }" has not been translated to requested locale "${locale}". Please add translation.`
+    );
+    return defaultWithVars;
+  }
+
+  // If message key doesn`t exist in requested locale but defaultLocale is set, add to default messages and return default (no warning)
+  if (!existingMessage && defaultLocale) {
+  }
+
+  // If message key exists in requested locale return message according to provided locale
+  if (existingMessage) return generateStringWithVars(existingMessage[1], vars);
+  // just in case
+  return null;
+};
+
+// - add new text -
+
+const addNewMessage = (messages, locale, message) => {
+  console.log(messages[locale]);
+
+  let newMessages = { ...messages };
+
+  // If locale doesn`t exist add it (???)
+  if (!messages[locale]) {
+    newMessages = { ...messages, [locale]: { [generateKeyFromString(message)]: message } };
+  }
+
+  // if (messages[locale]) {
+  //   const messagesOfLocale = messages[locale];
+  //   const newLocale = {
+  //     ...messagesOfLocale,
+  //     [generateKeyFromString(message)]: message
+  //   };
+  //   console.info(`A new message "${message}" was added to locale "${locale}".`);
+  //   return { ...messages, [locale]: newLocale };
+  // }
+  // console.info(`A new locale "${locale}" with message "${message}" was added.`);
+  // return { ...messages, [locale]: { [generateKeyFromString(message)]: message } };
+};
+
+/**
+ *
+ * @param {*} message
+ */
+export const generateKeyFromString = message => {
+  return message
+    .toLowerCase()
+    .replace(/{|}|\.|,|\?|\!/g, '')
+    .replace(/ /g, '_');
+  // TODO: add more RegEx to remove special characters
+};
+
+// --- Config ---
+
+/**
+ * Adds a config object
+ * @param {object} config
+ *                 currentLocale: currently selected locale (weather automatically or in the user settings) - required
+ *                 dafaultLocale: if provided, default messages passed with formatMessage will automatically be added to this locale
+ */
+export const addConfig = ({ currentLocale, defaultLocale, noWarnings }) => null;
