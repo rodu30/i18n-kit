@@ -2,7 +2,7 @@
   "name": "i18n-kit",
   "version": "0.0.0",
   "description": "Library to provide basic i18n functions for JavaScript apps",
-  "main": "dist/ui-kit.js",
+  "main": "dist/i18n-kit.js",
   "scripts": {
     "build:dev": "webpack --env=dev --progress --hide-modules",
     "build:dist": "rimraf dist && webpack --env=prod --progress --profile --colors --hide-modules",
