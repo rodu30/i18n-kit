@@ -4,7 +4,7 @@
   "description": "Library to provide basic i18n functions for JavaScript apps",
   "main": "dist/i18n-kit.js",
   "scripts": {
-    "build:dev": "webpack --env=dev --progress --hide-modules",
+    "build:dev": "rimraf dist && webpack --env=dev --progress --hide-modules",
     "build:dist": "rimraf dist && webpack --env=prod --progress --profile --colors --hide-modules",
     "watch": "webpack --env=dev --watch --progress --colors --hide-modules",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -22,11 +22,17 @@
   "homepage": "https://github.com/rodu30/i18n-kit#readme",
   "devDependencies": {
     "babel-core": "^6.26.0",
+    "babel-eslint": "^7.2.3",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "eslint": "^4.11.0",
+    "eslint-config-react-app": "^2.0.1",
+    "eslint-plugin-flowtype": "^2.34.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.5.1",
     "prettier-eslint": "^8.2.2",
     "rimraf": "^2.6.2",
     "webpack": "^3.8.1",
@@ -47,5 +53,25 @@
         }
       ]
     ]
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "extends": "react-app",
+    "plugins": ["react", "jsx-a11y", "import"],
+    "env": {
+      "browser": true
+    },
+    "rules": {
+      "comma-dangle": [
+        "error",
+        {
+          "arrays": "always-multiline",
+          "objects": "always-multiline",
+          "imports": "always-multiline",
+          "exports": "always-multiline",
+          "functions": "never"
+        }
+      ]
+    }
   }
 }
