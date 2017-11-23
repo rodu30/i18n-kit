@@ -16,15 +16,21 @@ const generateStringWithVars = (message, vars = {}) => {
 };
 
 /**
- * Generates a key from a given message
+ * Generates a key from a given message and an optional namespace string
  * @param {string} message
+ * @param {string} namespace
+ * @returns {string} generated key
  */
-export const generateKeyFromString = message =>
-  message
+export const generateKeyFromString = (message, namespace) => {
+  const key = message
     .toLowerCase()
-    .replace(/{|}|\.|,|\?|\!/g, '')
+    .replace(/\.|,|\?|!/g, '')
+    .replace(/{.*}/g, 'var')
     .replace(/ /g, '_');
-// TODO: add more RegEx to remove special characters
+  // TODO: add more RegEx to remove special characters + make keys shorter (= better performance)
+  if (namespace) return namespace.toLowerCase().concat('.', key);
+  return key;
+};
 
 /**
  * Adds new message and new locale (if necessary) to a given message object
@@ -33,14 +39,14 @@ export const generateKeyFromString = message =>
  * @param {string} message
  * @returns {object} new messages
  */
-export const addNewMessage = (messages, locale, message) => {
+export const addNewMessage = (messages, locale, message, description, namespace) => {
   // New message key
-  const newKey = generateKeyFromString(message);
+  const newKey = generateKeyFromString(message, namespace);
 
   // Clone messages
   const newMessages = { ...messages };
 
-  // If locale doesn't exist, add it and then message to it
+  // If locale doesn't exist, add it
   if (!messages[locale]) {
     newMessages[locale] = locale;
     console.info(`A new locale "${locale}" was added.`);
@@ -69,21 +75,22 @@ export const addNewMessage = (messages, locale, message) => {
  * @param {string} message
  * @param {object} options:
  *                 {object} vars variables for placeholder in message
- *                 {string} messageLocale if provided, the message will automatically be added to this locale
- *                 {string} description
- *                 {boolean} noWarnings
- * @returns {string}
+ *                 {boolean} disableWarnings disables warnings about missing translations
+ *                 {string} messageLocale if provided, the message will automatically be added to this locale --> adding
+ *                 {string} description ?? optional description to give translator some context ?? --> adding
+ *                 {string} namespace adds an additional name space to the message (e.g. a component or library name) which is added to generated key and helps to group messages --> adding
+ * @returns {string} formatted string
  */
 const formatMessage = (locale, messages, message, options = {}) => {
   // Deconstruct options
-  const { vars, messageLocale, description, disableWarnings } = options;
+  const { vars, disableWarnings, messageLocale, description, namespace } = options;
 
   // Get complete string with vars
   const defaultWithVars = generateStringWithVars(message, vars);
 
   // // If messageLocale is set, add message to messages of default locale
   // if (messageLocale) {
-  //   addNewMessage(messages, messageLocale, message);
+  //   addNewMessage(messages, messageLocale, message, description, namespace);
   // }
 
   // If requested locale doesn't exist yet return default (+ warning)
@@ -124,6 +131,11 @@ const formatMessage = (locale, messages, message, options = {}) => {
 
   // just in case
   return null;
+};
+
+const translateMessage = () => {
+  // split up translation and formatting
+  // Use tagged template literal for formatting + regular func for translation ?
 };
 
 export default formatMessage;
