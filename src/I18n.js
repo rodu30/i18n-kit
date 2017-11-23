@@ -22,20 +22,20 @@ export default class I18n {
    * @param {object} messages
    * @param {string} defaultLocale
    * @param {string} messageLocale
-   * @param {object} options use a keys 'messageOptions', 'numberOptions', 'dateTimeOptions' to specify
+   * @param {object} options use a keys 'message', 'number', 'dateTime' to specify
    */
   constructor(
     messages,
     defaultLocale,
     messageLocale = undefined,
-    { messageOptions = {}, numberOptions = {}, dateTimeOptions = {} }
+    { message = {}, number = {}, dateTime = {} }
   ) {
     this.messages = messages;
     this.locale = defaultLocale;
     this.defaultLocale = defaultLocale;
-    this.messageOptions = { ...messageOptions, messageLocale };
-    this.numberOptions = numberOptions;
-    this.dateTimeOptions = dateTimeOptions;
+    this.messageOptions = { ...message, messageLocale };
+    this.numberOptions = number;
+    this.dateTimeOptions = dateTime;
   }
 
   /**
@@ -114,13 +114,21 @@ export default class I18n {
    * @param {string} message
    * @param {object} options
    */
-  formatMessage = (message, options) => {
+  formatMessage = (message, options = {}) => {
     // If messageLocale is set, add message to messages of default locale
     const messageLocale = options.messageLocale || this.messageOptions.messageLocale;
     if (messageLocale) {
       this.messages = addNewMessage(this.messages, messageLocale, message);
     }
-    console.log(this);
+    // console.log(this);
     return formatMessage(this.locale, this.messages, message, options || this.messageOptions);
+  };
+
+  hasMessage = message => {
+    // return true if message exists in current locale
+  };
+
+  addMessage = (message, locale) => {
+    // adds message or array of multiple messages to given locale to this.messages
   };
 }
