@@ -1,6 +1,6 @@
 import formatNumber from './number';
 import formatDateTime from './dateTime';
-import formatMessage, { addNewMessage } from './message';
+import translateMessage, { addNewMessage, formatMessage, generateKeyFromString } from './message';
 
 /**
  *
@@ -107,28 +107,49 @@ export default class I18n {
     formatDateTime(this.locale, date, options || this.dateTimeOptions);
 
   /**
-   * Format a ICU string with optional variables and
-   * return translation if current locale is not the default locale
+   * Returns a translated string if current locale is not the default locale
    * NOTE: if provided, options override class options
    * @memberof I18n
    * @param {string} message
    * @param {object} options
+   * @returns {string}
    */
-  formatMessage = (message, options = {}) => {
-    // If messageLocale is set, add message to messages of default locale
+  translateMessage = (message, options = {}) => {
+    // If messageLocale is set in local or global options, add message to messages of default locale
     const messageLocale = options.messageLocale || this.messageOptions.messageLocale;
     if (messageLocale) {
       this.messages = addNewMessage(this.messages, messageLocale, message);
     }
-    // console.log(this);
-    return formatMessage(this.locale, this.messages, message, options || this.messageOptions);
+    return translateMessage(this.locale, this.messages, message, options || this.messageOptions);
   };
 
+  /**
+   * Formats a translated ICU string with optional variables
+   * @memberof I18n
+   * @param {string} message
+   * @param {object} vars
+   * @returns {string}
+   */
+  formatMessage = (message, vars = {}) => formatMessage(message, vars);
+
+  /**
+   * Returns true if provided message exists in current locale
+   * @memberof I18n
+   * @param {string} message
+   * @returns {boolean}
+   */
   hasMessage = message => {
-    // return true if message exists in current locale
+    if (this.messages[this.locale][generateKeyFromString(message)]) return true;
+    return false;
   };
 
+  /**
+   * Adds message (or array of multiple messages??) to given locale to this.messages
+   * @memberof I18n
+   * @param {string} message
+   * @param {string} locale
+   */
   addMessage = (message, locale) => {
-    // adds message or array of multiple messages to given locale to this.messages
+    this.messages = addNewMessage(this.messages, locale, message);
   };
 }
