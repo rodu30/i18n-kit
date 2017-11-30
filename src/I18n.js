@@ -114,6 +114,7 @@ export default class I18n {
    * @param {object} options
    * @returns {string}
    */
+  //   translateMessage = (message, description) => {
   translateMessage = (message, options = {}) => {
     // If messageLocale is set in local or global options, add message to messages of default locale
     const messageLocale = options.messageLocale || this.messageOptions.messageLocale;

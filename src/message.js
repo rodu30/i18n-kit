@@ -1,4 +1,4 @@
-// --- Helper for formatting and adding messages ---
+// --- Translating messages ---
 
 /**
  * Generates a key from a given message and an optional namespace string
@@ -33,10 +33,10 @@ export const addNewMessage = (messages, locale, message, description, namespace)
     console.info(`A new locale "${locale}" was added.`);
   }
 
-  // If message key already exists for locale and value is identical, do nothing, if not identical log error
-  if (messages[locale][newKey] && messages[locale][newKey] !== message) {
-    console.error(`Error: Message key "${newKey}" already exists`);
-  }
+  // // If message key already exists for locale and value is identical, do nothing, if not identical log error
+  // if (messages[locale][newKey] && messages[locale][newKey] !== message) {
+  //   console.error(`Error: Message key "${newKey}" already exists`);
+  // }
 
   // If message key doesn't exist for locale, add it
   if (!messages[locale][newKey]) {
@@ -44,24 +44,6 @@ export const addNewMessage = (messages, locale, message, description, namespace)
     console.info(`A new message "${message}" was added to locale "${locale}".`);
   }
   return newMessages;
-};
-
-// --- Format text ---
-
-/**
- * Generates a new string from the provided message containing placeholders (according to ICU standard) and an object with variables
- * @param {string} message
- * @param {object} vars variables for placeholder in message
- * @returns {string}
- */
-// TODO: Use tagged template literal for formatting + regular func for translation ?
-export const formatMessage = (message, vars = {}) => {
-  let newMessage = message;
-  Object.entries(vars).forEach(([key, value]) => {
-    const pattern = new RegExp(`{${key}}`, 'g');
-    newMessage = newMessage.replace(pattern, value);
-  });
-  return newMessage;
 };
 
 /**
@@ -127,6 +109,24 @@ const translateMessage = (locale, messages, message, options = {}) => {
 
   // just in case
   return null;
+};
+
+// --- Format text ---
+
+/**
+ * Generates a new string from the provided message containing placeholders (according to ICU standard) and an object with variables
+ * @param {string} message
+ * @param {object} vars variables for placeholder in message
+ * @returns {string}
+ */
+// TODO: Use tagged template literal for formatting + regular func for translation ?
+export const formatMessage = (message, vars = {}) => {
+  let newMessage = message;
+  Object.entries(vars).forEach(([key, value]) => {
+    const pattern = new RegExp(`{${key}}`, 'g');
+    newMessage = newMessage.replace(pattern, value);
+  });
+  return newMessage;
 };
 
 export default translateMessage;

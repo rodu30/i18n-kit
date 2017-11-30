@@ -37,7 +37,7 @@ I18n.formatNumber();
 
 > Examples tba
 
-### Message scanner
+### Message extracting
 
 tba
 
@@ -76,6 +76,34 @@ e.g. in libraries
 * just import base functions
 * pass messages, current locale together with single message
 * use script later to extract translations (?)
+
+????
+
+### Formatting
+
+#### Number
+
+#### DateTime
+
+#### Strings
+
+### Translation
+
+#### Options
+
+Every translation message can take additional options:
+
+* `disableWarnings`: If set to `true` it disables all warnings about status of the translation (e.g.
+  not found). This can be useful when you are not using a message object e.g. in a library
+* `messageLocale`: The locale of the provided message. Normally you won't need this because you
+  should provide all messages in a default language which is passed in from the main settings,
+  however in case you are not fluent in your default... ???
+* `description`: Additional context for the message
+* `namespace`: Namespace for the message... ???
+
+> NOTE: if you are using the CLI for extracting messages you have to pass the option object directly
+> as argument to the method (not via variable) because variables cannot be interpreted by the
+> extract-script.
 
 ## Misc
 
