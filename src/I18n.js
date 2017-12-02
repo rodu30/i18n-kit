@@ -1,6 +1,6 @@
 import formatNumber from './number';
 import formatDateTime from './dateTime';
-import translateMessage, { addNewMessage, formatMessage, generateKeyFromString } from './message';
+import translateMessage, { formatMessage, generateKeyFromString } from './message';
 
 /**
  *
@@ -53,16 +53,7 @@ export default class I18n {
     // console.log(this);
   };
 
-  /**
-   * Set or update options for formatting messages in your instance of this class
-   * @memberof I18n
-   * @param {object} options
-   */
-  // TODO: add more defined definition
-  setMessageOptions = options => {
-    this.messageOptions = { ...this.messageOptions, ...options };
-    // console.log(this);
-  };
+  // --- Number ---
 
   /**
    * Set or update options for formatting numbers in your instance of this class
@@ -76,6 +67,18 @@ export default class I18n {
   };
 
   /**
+   * Format a number according to current locale
+   * NOTE: if provided, options override class options
+   * @memberof I18n
+   * @param {number} number
+   * @param {object} options
+   */
+  formatNumber = (number, options) =>
+    formatNumber(this.locale, number, options || this.numberOptions);
+
+  // --- DateTime ---
+
+  /**
    * Set or update options for formatting date objects in your instance of this class
    * @memberof I18n
    * @param {object} options
@@ -87,16 +90,6 @@ export default class I18n {
   };
 
   /**
-   * Format a number according to current locale
-   * NOTE: if provided, options override class options
-   * @memberof I18n
-   * @param {number} number
-   * @param {object} options
-   */
-  formatNumber = (number, options) =>
-    formatNumber(this.locale, number, options || this.numberOptions);
-
-  /**
    * Format a Date object according to current locale
    * NOTE: if provided, options override class options
    * @memberof I18n
@@ -106,6 +99,19 @@ export default class I18n {
   formatDateTime = (date, options) =>
     formatDateTime(this.locale, date, options || this.dateTimeOptions);
 
+  // --- Message ---
+
+  /**
+   * Set or update options for translating messages in your instance of this class
+   * @memberof I18n
+   * @param {object} options
+   */
+  // TODO: add more defined definition
+  setMessageOptions = options => {
+    this.messageOptions = { ...this.messageOptions, ...options };
+    // console.log(this);
+  };
+
   /**
    * Returns a translated string if current locale is not the default locale
    * NOTE: if provided, options override class options
@@ -114,15 +120,10 @@ export default class I18n {
    * @param {object} options
    * @returns {string}
    */
-  //   translateMessage = (message, description) => {
-  translateMessage = (message, options = {}) => {
-    // If messageLocale is set in local or global options, add message to messages of default locale
-    const messageLocale = options.messageLocale || this.messageOptions.messageLocale;
-    if (messageLocale) {
-      this.messages = addNewMessage(this.messages, messageLocale, message);
-    }
-    return translateMessage(this.locale, this.messages, message, options || this.messageOptions);
-  };
+  // TODO: maybe pass only description and options only via method
+  // translateMessage = (message, description) => {
+  translateMessage = (message, options = {}) =>
+    translateMessage(this.locale, this.messages, message, options || this.messageOptions);
 
   /**
    * Formats a translated ICU string with optional variables
@@ -142,15 +143,5 @@ export default class I18n {
   hasMessage = message => {
     if (this.messages[this.locale][generateKeyFromString(message)]) return true;
     return false;
-  };
-
-  /**
-   * Adds message (or array of multiple messages??) to given locale to this.messages
-   * @memberof I18n
-   * @param {string} message
-   * @param {string} locale
-   */
-  addMessage = (message, locale) => {
-    this.messages = addNewMessage(this.messages, locale, message);
   };
 }
