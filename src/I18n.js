@@ -1,6 +1,6 @@
 import formatNumber from './number';
 import formatDateTime from './dateTime';
-import translateMessage, { formatMessage, generateKeyFromString } from './message';
+import translateMessage, { formatMessage, getMessage } from './message';
 
 /**
  *
@@ -20,37 +20,32 @@ export default class I18n {
    * TODO: does that make sense??
    *
    * @param {object} messages
-   * @param {string} defaultLocale
-   * @param {string} messageLocale
-   * @param {object} options use a keys 'message', 'number', 'dateTime' to specify
+   * @param {string} initialLocale
+   * @param {object} options  use keys 'message', 'number', 'dateTime' to specify options for formatting
    */
-  constructor(
-    messages,
-    defaultLocale,
-    messageLocale = undefined,
-    { message = {}, number = {}, dateTime = {} }
-  ) {
+  constructor(messages, initialLocale, options = {}) {
+    const { message = {}, number = {}, dateTime = {} } = options;
+
     this.messages = messages;
-    this.locale = defaultLocale;
-    this.defaultLocale = defaultLocale;
-    this.messageOptions = { ...message, messageLocale };
+    this.locale = initialLocale;
+    this.defaultLocale = initialLocale;
+    this.messageOptions = message;
     this.numberOptions = number;
     this.dateTimeOptions = dateTime;
   }
 
   /**
-   * Update current locale e.g. when user settings change
+   * Update current locale (e.g. when user settings change),
+   * if no locale is provided locale is set to default
    * @memberof I18n
    * @param {string} locale
    */
   setLocale = locale => {
-    this.locale = locale;
-    // console.log(this);
-  };
-
-  setLocaleToDefault = () => {
-    this.locale = this.defaultLocale;
-    // console.log(this);
+    if (locale) {
+      this.locale = locale;
+    } else {
+      this.locale = this.defaultLocale;
+    }
   };
 
   // --- Number ---
@@ -106,33 +101,30 @@ export default class I18n {
    * @memberof I18n
    * @param {object} options
    */
-  // TODO: add more defined definition
   setMessageOptions = options => {
     this.messageOptions = { ...this.messageOptions, ...options };
-    // console.log(this);
   };
 
   /**
-   * Returns a translated string if current locale is not the default locale
-   * NOTE: if provided, options override class options
+   * Returns a formatted and translated string, depending on user's current locale
+   * (returns the provided message if current locale is the message locale or if no translation exists)
    * @memberof I18n
    * @param {string} message
-   * @param {object} options
+   * @param {object} args:
+   *                 description: {string}  additional context for this message for the translator
+   *                 values: {object}       variables for the message
    * @returns {string}
    */
-  // TODO: maybe pass only description and options only via method
-  // translateMessage = (message, description) => {
-  translateMessage = (message, options = {}) =>
-    translateMessage(this.locale, this.messages, message, options || this.messageOptions);
-
-  /**
-   * Formats a translated ICU string with optional variables
-   * @memberof I18n
-   * @param {string} message
-   * @param {object} vars
-   * @returns {string}
-   */
-  formatMessage = (message, vars = {}) => formatMessage(message, vars);
+  translateMessage = (message, args = {}) => {
+    const { description, ...values } = args;
+    const translatedMsg = translateMessage(
+      this.locale,
+      this.messages,
+      message,
+      this.messageOptions
+    );
+    return formatMessage(translatedMsg, values);
+  };
 
   /**
    * Returns true if provided message exists in current locale
@@ -141,7 +133,7 @@ export default class I18n {
    * @returns {boolean}
    */
   hasMessage = message => {
-    if (this.messages[this.locale][generateKeyFromString(message)]) return true;
+    if (getMessage(this.locale, this.messages, message)) return true;
     return false;
   };
 }
