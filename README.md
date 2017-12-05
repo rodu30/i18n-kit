@@ -45,7 +45,7 @@ create a new instance with a few arguments:
 * `messages`: an object with the translations; has to be structured like this:
 
 ```javascript
-{<locale>: { <key>: { message: <message> }}}
+{[locale]: { [key]: { message: ... }}}
 ```
 
 * `locale`: the current locale which determines how text, numbers etc are formatted
@@ -78,7 +78,7 @@ const options = {
 const i18n = new I18n(messages, locale, options);
 ```
 
-Once instantiated the object can be passed to components or imported in other modules.
+Once instantiated, the object can be passed to components or exported to other modules.
 
 ### Provider for react app
 
@@ -94,19 +94,19 @@ function for every type and some options that can be added globally or locally.
 
 ### Setting options
 
-Options for all number styles can be added or changed in three ways:
+Options for all formatter can be added or changed in three ways:
 
 * passed directly for the individual format (helpful to overwrite global settings - Exception are
   message options: currently there is no use case where local options could be helpful)
-* globally via constructor (probably standard case):
+* globally via constructor using keys for individual settings (probably standard case):
 
 ```js
 new I18n(messages, locale, {number: { ... }});
 ```
 
-* globally via class setter (use this if options are set or changed at a different place in the app
-  than where the class is instantiated, e.g. via user settings - should be avoided because it has
-  side effects on all formatted content):
+* globally via setter (use this if options are set in a different place in the app as where the
+  class is instantiated - should normally be avoided because it has side effects on all formatted
+  content):
 
 ```js
 const i18n = new I18n(messages, locale);
@@ -114,7 +114,7 @@ const i18n = new I18n(messages, locale);
 i18n.options = {number: { ... }};
 ```
 
-### Numbers
+### Formatting number types
 
 Common options _(can be used for every number style)_:
 
@@ -146,26 +146,26 @@ other. If at least one property from the second group is defined, then the first
 > Taken from
 > [`Intl.NumberFormat` MDN page](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat)
 
-#### Number formatting
+#### Number
 
 Use the `n` function:
 
 ```javascript
 const i18n = new I18n(messages>, locale);
 
-i18n.n(<number>[, options]);
+i18n.n(number[, options]);
 ```
 
 Additional options: _none_
 
-#### Currency formatting
+#### Currency
 
 Use the `n` function:
 
 ```javascript
 const i18n = new I18n(messages, locale);
 
-i18n.c(<sum>[, options]);
+i18n.c(sum[, options]);
 ```
 
 Additional options:
@@ -177,19 +177,19 @@ Additional options:
   "symbol" to use a localized currency symbol such as €, "code" to use the ISO currency code, "name"
   to use a localized currency name such as "dollar"; the default is "symbol".
 
-#### Percent formatting
+#### Percent
 
 Use the `p` function:
 
 ```javascript
 const i18n = new I18n(messages, locale);
 
-i18n.p(<number>[, options]);
+i18n.p(number[, options]);
 ```
 
 Additional options: _none_
 
-### DateTime
+### Formatting dateTime
 
 Common options _(can be used for every dateTime style)_:
 
@@ -222,14 +222,14 @@ desired representations. Implementations are required to support at least the fo
 > Taken from
 > [`Intl.DateTimeFormat` MDN page](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat)
 
-#### Date formatting
+#### Date
 
 Use the `d` function:
 
 ```javascript
 const i18n = new I18n(messages, locale);
 
-i18n.d(<date>[, options]);
+i18n.d(date[, options]);
 ```
 
 Additional options:
@@ -244,14 +244,14 @@ Additional options:
 
 _default: year, month, day ("numeric");_ set to `undefined` to overwrite
 
-#### Time formatting
+#### Time
 
 Use the `t` function:
 
 ```javascript
 const i18n = new I18n(messages, locale);
 
-i18n.t(<date>[, options]);
+i18n.t(date[, options]);
 ```
 
 Additional options:
@@ -262,7 +262,7 @@ Additional options:
 
 _default: hour, minute ("numeric");_ set to `undefined` to overwrite
 
-### Strings
+### Formatting strings
 
 #### Message translation
 
@@ -271,7 +271,7 @@ Use the `m` function:
 ```js
 const i18n = new I18n(messages, locale);
 
-i18n.m(<message>[, args]);
+i18n.m(message[, args]);
 ```
 
 The arguments-object can contain a `description` of the context (can be useful for the translator
