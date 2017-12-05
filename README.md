@@ -264,6 +264,14 @@ _default: hour, minute ("numeric");_ set to `undefined` to overwrite
 
 ### Formatting strings
 
+Options:
+
+* `disableWarnings`: Set to false in order to disable all warnings about status of the translation
+  (e.g. not found). This can be useful when you are not using translations e.g. in a component
+  library.
+* `messageLocale`: Provide the locale for default messages (no warning is printed if current locale
+  is the same as default).
+
 #### Message translation
 
 Use the `m` function:
@@ -288,14 +296,6 @@ i18n.m(`This is {num1} test for {num2}.`, {
 > NOTE: If you are using the **i18n-cli** for extracting messages you need to pass the message and
 > the args to the method object directly as argument (not via variable) because variables cannot be
 > interpreted by the extract-script.
-
-Options:
-
-* `disableWarnings`: Set to false in order to disable all warnings about status of the translation
-  (e.g. not found). This can be useful when you are not using translations e.g. in a component
-  library.
-* `messageLocale`: Provide the locale for default messages (no warning is printed if current locale
-  is the same as default).
 
 #### Message extracting
 
