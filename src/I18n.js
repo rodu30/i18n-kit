@@ -1,129 +1,53 @@
-import formatNumber from './number';
-import formatDateTime from './dateTime';
-import translateMessage, { formatMessage, getMessage } from './message';
+import * as messageFormatter from './message';
 
 /**
- *
- *
- * @export
+ * Class for internalization and localization of numbers (plain numbers, currency, percent), dates objects (dates, time) and strings (messages with vars)
  * @class I18n
  */
 export default class I18n {
   /**
-   * Constructor for instance of this class,
-   * passing the object for messages and an initial default locale is required,
-   * passing a message locale is optional
-   * NOTE: If provided, messages passed to formatMessage will automatically be added to this locale,
-   * which should be the standard use case. If not set, messages will be displayed but not saved.
-   * A possible use case could be when you wish to define the messages manually and only use the
-   * default message as fallback. In this case you can disable all warnings in the message options.
-   * TODO: does that make sense??
-   *
+   * Constructor for instances of this class,
+   * providing the object for messages and an initial default locale is required,
+   * providing individual options is optional (if no options provided the formatters will use defaults)
    * @param {object} messages
-   * @param {string} initialLocale
-   * @param {object} options  use keys 'message', 'number', 'dateTime' to specify options for formatting
+   * @param {string} locale
+   * @param {object} options (keys: 'message', 'number', 'currency', 'percent', 'date', 'time')
    */
-  constructor(messages, initialLocale, options = {}) {
-    const { message = {}, number = {}, dateTime = {} } = options;
+  constructor(messages, locale, options = {}) {
+    // Set locale
+    this._locale = locale;
+    this._defaultLocale = locale;
 
-    this.messages = messages;
-    this.locale = initialLocale;
-    this.defaultLocale = initialLocale;
-    this.messageOptions = message;
-    this.numberOptions = number;
-    this.dateTimeOptions = dateTime;
+    // Set messages
+    this._messages = messages;
+
+    // Init options
+    const { message, number, currency, percent, date, time } = options;
+    this._options = {
+      message: message,
+      number: { ...number, style: 'decimal' },
+      currency: { currency: 'EUR', ...currency, style: 'currency' },
+      percent: { ...percent, style: 'percent' },
+      date: { year: 'numeric', month: 'numeric', day: 'numeric', ...date },
+      time: { hour: 'numeric', minute: 'numeric', ...time }
+    };
+
+    // Init formatter
+    this.initFormatter();
   }
 
-  /**
-   * Update current locale (e.g. when user settings change),
-   * if no locale is provided locale is set to default
-   * @memberof I18n
-   * @param {string} locale
-   */
-  setLocale = locale => {
-    if (locale) {
-      this.locale = locale;
-    } else {
-      this.locale = this.defaultLocale;
-    }
-  };
-
-  // --- Number ---
+  // --- helper ---
 
   /**
-   * Set or update options for formatting numbers in your instance of this class
+   * Creates new instances for Intl formatter
    * @memberof I18n
-   * @param {object} options
    */
-  // TODO: add more defined definition
-  setNumberOptions = options => {
-    this.numberOptions = { ...this.numberOptions, ...options };
-    // console.log(this);
-  };
-
-  /**
-   * Format a number according to current locale
-   * NOTE: if provided, options override class options
-   * @memberof I18n
-   * @param {number} number
-   * @param {object} options
-   */
-  formatNumber = (number, options) =>
-    formatNumber(this.locale, number, options || this.numberOptions);
-
-  // --- DateTime ---
-
-  /**
-   * Set or update options for formatting date objects in your instance of this class
-   * @memberof I18n
-   * @param {object} options
-   */
-  // TODO: add more defined definition
-  setDateTimeOptions = options => {
-    this.dateTimeOptions = { ...this.dateTimeOptions, ...options };
-    // console.log(this);
-  };
-
-  /**
-   * Format a Date object according to current locale
-   * NOTE: if provided, options override class options
-   * @memberof I18n
-   * @param {object} date
-   * @param {object} options
-   */
-  formatDateTime = (date, options) =>
-    formatDateTime(this.locale, date, options || this.dateTimeOptions);
-
-  // --- Message ---
-
-  /**
-   * Set or update options for translating messages in your instance of this class
-   * @memberof I18n
-   * @param {object} options
-   */
-  setMessageOptions = options => {
-    this.messageOptions = { ...this.messageOptions, ...options };
-  };
-
-  /**
-   * Returns a formatted and translated string, depending on user's current locale
-   * (returns the provided message if current locale is the message locale or if no translation exists)
-   * @memberof I18n
-   * @param {string} message
-   * @param {object} args:
-   *                 description: {string}  additional context for this message for the translator
-   *                 values: {object}       variables for the message
-   * @returns {string}
-   */
-  translateMessage = (message, args = {}) => {
-    const { description, ...values } = args;
-    const translatedMsg = translateMessage(
-      this.locale,
-      this.messages,
-      message,
-      this.messageOptions
-    );
-    return formatMessage(translatedMsg, values);
+  initFormatter = () => {
+    this._numberFormatter = new Intl.NumberFormat(this._locale, this._options.number);
+    this._currencyFormatter = new Intl.NumberFormat(this._locale, this._options.currency);
+    this._percentFormatter = new Intl.NumberFormat(this._locale, this._options.percent);
+    this._dateFormatter = new Intl.DateTimeFormat(this._locale, this._options.date);
+    this._timeFormatter = new Intl.DateTimeFormat(this._locale, this._options.time);
   };
 
   /**
@@ -133,7 +57,163 @@ export default class I18n {
    * @returns {boolean}
    */
   hasMessage = message => {
-    if (getMessage(this.locale, this.messages, message)) return true;
+    if (messageFormatter.get(this._locale, this._messages, message)) return true;
     return false;
+  };
+
+  // --- getters & setters ---
+
+  /**
+   * Update current locale (e.g. when user settings change),
+   * if no locale is provided locale is set to default
+   * @memberof I18n
+   * @param {string} locale
+   */
+  set locale(locale) {
+    if (locale) {
+      this._locale = locale;
+    } else {
+      this._locale = this._defaultLocale;
+    }
+    // Create new formatter instances with the new locale
+    this.initFormatter();
+  }
+
+  /**
+   * Getter for locale
+   * @readonly
+   * @memberof I18n
+   */
+  get locale() {
+    return this._locale;
+  }
+
+  /**
+   * Sets global formatting and translation options,
+   * overrides default settings from constructor (attention!)
+   * @memberof I18n
+   * @param {object} options (keys: 'message', 'number', 'currency', 'percent', 'date', 'time')
+   */
+  set options(options) {
+    Object.entries(options).forEach(([key, value]) => {
+      switch (key) {
+        case 'number':
+          this._options.number = { ...value, style: 'decimal' };
+          break;
+        case 'currency':
+          this._options.currency = { ...value, style: 'currency' };
+          break;
+        case 'percent':
+          this._options.number = { ...value, style: 'percent' };
+          break;
+        default:
+          this._options[key] = value;
+      }
+    });
+    this.initFormatter();
+  }
+
+  /**
+   * Getter for options
+   * @memberof I18n
+   */
+  get options() {
+    return this._options;
+  }
+
+  // --- formatter ---
+
+  /**
+   * Formats number according to current locale; options can override gobal options
+   * @memberof I18n
+   * @param {number} number
+   * @param {object} options
+   * @returns {string}
+   */
+  n = (number, options) => {
+    if (options)
+      return new Intl.NumberFormat(this._locale, { ...this._options.number, ...options }).format(
+        number
+      );
+    return this._numberFormatter.format(number);
+  };
+
+  /**
+   * Formats currency according to current locale; options can override gobal options
+   * @memberof I18n
+   * @param {number} sum
+   * @param {object} options
+   * @returns {string}
+   */
+  c = (sum, options) => {
+    if (options)
+      return new Intl.NumberFormat(this._locale, { ...this._options.currency, ...options }).format(
+        sum
+      );
+    return this._currencyFormatter.format(sum);
+  };
+
+  /**
+   * Formats percent number according to current locale; options can override gobal options
+   * @memberof I18n
+   * @param {number} number
+   * @param {object} options
+   * @returns {string}
+   */
+  p = (number, options) => {
+    if (options)
+      return new Intl.NumberFormat(this._locale, { ...this._options.percent, ...options }).format(
+        number / 100
+      );
+    return this._percentFormatter.format(number / 100);
+  };
+
+  /**
+   * Formats date according to current locale; options can override gobal options
+   * @memberof I18n
+   * @param {object} date
+   * @param {object} options
+   * @returns {string}
+   */
+  d = (date, options) => {
+    if (options)
+      return new Intl.DateTimeFormat(this._locale, { ...this._options.date, ...options }).format(
+        date
+      );
+    return this._dateFormatter.format(date);
+  };
+
+  /**
+   * Formats time according to current locale; options can override gobal options
+   * @memberof I18n
+   * @param {object} date
+   * @param {object} options
+   * @returns {string}
+   */
+  t = (date, options) => {
+    if (options)
+      return new Intl.DateTimeFormat(this._locale, { ...this._options.time, ...options }).format(
+        date
+      );
+    return this._timeFormatter.format(date);
+  };
+
+  /**
+   * Formats and translates a string, depending on user's current locale
+   * (returns the provided message if current locale is the message locale or if no translation exists)
+   * @memberof I18n
+   * @param {string} message
+   * @param {object} args (description, values)
+   * @returns {string}
+   */
+  m = (message, args = {}) => {
+    const { description, ...values } = args;
+    const translatedMsg = messageFormatter.translate(
+      this._locale,
+      this._messages,
+      message,
+      this._options.message
+    );
+    return messageFormatter.format(translatedMsg, values);
   };
 }

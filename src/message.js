@@ -5,7 +5,7 @@
  * @param {object} values variables for placeholder in message
  * @returns {string}
  */
-export const formatMessage = (message, values = {}) => {
+export const format = (message, values = {}) => {
   let newMessage = message;
   Object.entries(values).forEach(([key, value]) => {
     const pattern = new RegExp(`{${key}}`, 'g');
@@ -19,7 +19,7 @@ export const formatMessage = (message, values = {}) => {
  * @param {string} message
  * @returns {string}
  */
-export const generateKeyFromMessage = message => {
+export const generateKey = message => {
   // TODO: add more RegEx to remove special characters + make keys shorter (= better performance)
   return message.toLowerCase().replace(/ /g, '_');
 };
@@ -32,8 +32,8 @@ export const generateKeyFromMessage = message => {
  * @param {string} message
  * @returns {string}
  */
-export const getMessage = (locale, messages, message) => {
-  const msgKey = generateKeyFromMessage(message);
+export const get = (locale, messages, message) => {
+  const msgKey = generateKey(message);
   const msgObj = Object.entries(messages[locale]).find(
     ([key, value]) => key === msgKey && value.message && value.flag !== 'MISSING'
   );
@@ -52,7 +52,7 @@ export const getMessage = (locale, messages, message) => {
  *                 messageLocale: {string}     the locale of provided message (no warning is printed if current locale is default)
  * @returns {string}
  */
-const translateMessage = (locale, messages, message, options = {}) => {
+export const translate = (locale, messages, message, options = {}) => {
   const { disableWarnings, messageLocale } = options;
 
   // If requested locale doesn't exist yet return default (+ warning)
@@ -66,7 +66,7 @@ const translateMessage = (locale, messages, message, options = {}) => {
   }
 
   // Check if message exists for current locale
-  const existingMessage = getMessage(locale, messages, message);
+  const existingMessage = get(locale, messages, message);
 
   // If message key doesn't exist in requested locale...
   if (!existingMessage) {
@@ -90,5 +90,3 @@ const translateMessage = (locale, messages, message, options = {}) => {
   // just in case
   return null;
 };
-
-export default translateMessage;
