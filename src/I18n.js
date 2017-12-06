@@ -1,4 +1,4 @@
-import * as messageFormatter from './message';
+import * as messageFormatter from './messageFormatter';
 
 /**
  * Class for internalization and localization of numbers (plain numbers, currency, percent), dates objects (dates, time) and strings (messages with vars)
@@ -16,7 +16,7 @@ export default class I18n {
   constructor(messages, locale, options = {}) {
     // Set locale
     this._locale = locale;
-    this._defaultLocale = locale;
+    // this._defaultLocale = locale;
 
     // Set messages
     this._messages = messages;
@@ -29,26 +29,30 @@ export default class I18n {
       currency: { currency: 'EUR', ...currency, style: 'currency' },
       percent: { ...percent, style: 'percent' },
       date: { year: 'numeric', month: 'numeric', day: 'numeric', ...date },
-      time: { hour: 'numeric', minute: 'numeric', ...time }
+      time: { hour: 'numeric', minute: 'numeric', ...time },
     };
 
-    // Init formatter
-    this.initFormatter();
-  }
-
-  // --- helper ---
-
-  /**
-   * Creates new instances for Intl formatter
-   * @memberof I18n
-   */
-  initFormatter = () => {
+    // Create instances for Intl formatter
     this._numberFormatter = new Intl.NumberFormat(this._locale, this._options.number);
     this._currencyFormatter = new Intl.NumberFormat(this._locale, this._options.currency);
     this._percentFormatter = new Intl.NumberFormat(this._locale, this._options.percent);
     this._dateFormatter = new Intl.DateTimeFormat(this._locale, this._options.date);
     this._timeFormatter = new Intl.DateTimeFormat(this._locale, this._options.time);
-  };
+  }
+
+  // --- getters ---
+
+  // /**
+  //  * Creates new instances for Intl formatter
+  //  * @memberof I18n
+  //  */
+  // initFormatter = () => {
+  //   this._numberFormatter = new Intl.NumberFormat(this._locale, this._options.number);
+  //   this._currencyFormatter = new Intl.NumberFormat(this._locale, this._options.currency);
+  //   this._percentFormatter = new Intl.NumberFormat(this._locale, this._options.percent);
+  //   this._dateFormatter = new Intl.DateTimeFormat(this._locale, this._options.date);
+  //   this._timeFormatter = new Intl.DateTimeFormat(this._locale, this._options.time);
+  // };
 
   /**
    * Returns true if provided message exists in current locale
@@ -61,23 +65,30 @@ export default class I18n {
     return false;
   };
 
-  // --- getters & setters ---
-
   /**
-   * Update current locale (e.g. when user settings change),
-   * if no locale is provided locale is set to default
+   * Getter for all messages
+   * @readonly
    * @memberof I18n
-   * @param {string} locale
    */
-  set locale(locale) {
-    if (locale) {
-      this._locale = locale;
-    } else {
-      this._locale = this._defaultLocale;
-    }
-    // Create new formatter instances with the new locale
-    this.initFormatter();
+  get messages() {
+    return this._messages;
   }
+
+  // /**
+  //  * Update current locale (e.g. when user settings change),
+  //  * if no locale is provided locale is set to default
+  //  * @memberof I18n
+  //  * @param {string} locale
+  //  */
+  // set locale(locale) {
+  //   if (locale) {
+  //     this._locale = locale;
+  //   } else {
+  //     this._locale = this._defaultLocale;
+  //   }
+  //   // Create new formatter instances with the new locale
+  //   this.initFormatter();
+  // }
 
   /**
    * Getter for locale
@@ -88,33 +99,34 @@ export default class I18n {
     return this._locale;
   }
 
-  /**
-   * Sets global formatting and translation options,
-   * overrides default settings from constructor (attention!)
-   * @memberof I18n
-   * @param {object} options (keys: 'message', 'number', 'currency', 'percent', 'date', 'time')
-   */
-  set options(options) {
-    Object.entries(options).forEach(([key, value]) => {
-      switch (key) {
-        case 'number':
-          this._options.number = { ...value, style: 'decimal' };
-          break;
-        case 'currency':
-          this._options.currency = { ...value, style: 'currency' };
-          break;
-        case 'percent':
-          this._options.number = { ...value, style: 'percent' };
-          break;
-        default:
-          this._options[key] = value;
-      }
-    });
-    this.initFormatter();
-  }
+  // /**
+  //  * Sets global formatting and translation options,
+  //  * overrides default settings from constructor (attention!)
+  //  * @memberof I18n
+  //  * @param {object} options (keys: 'message', 'number', 'currency', 'percent', 'date', 'time')
+  //  */
+  // set options(options) {
+  //   Object.entries(options).forEach(([key, value]) => {
+  //     switch (key) {
+  //       case 'number':
+  //         this._options.number = { ...value, style: 'decimal' };
+  //         break;
+  //       case 'currency':
+  //         this._options.currency = { ...value, style: 'currency' };
+  //         break;
+  //       case 'percent':
+  //         this._options.number = { ...value, style: 'percent' };
+  //         break;
+  //       default:
+  //         this._options[key] = value;
+  //     }
+  //   });
+  //   this.initFormatter();
+  // }
 
   /**
    * Getter for options
+   * @readonly
    * @memberof I18n
    */
   get options() {

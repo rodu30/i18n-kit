@@ -36,11 +36,11 @@ Add **i18n-kit** to your project:
 $ npm install --save git+ssh://git@github.com:rodu30/i18n-kit.git
 ```
 
-### Init
+### In any JavaScript app
 
 In order to make the same language and formatting settings available everywhere in your app import
-the `I18n` object to the entry point of your app (in a react app this usually is `index.js`). Then
-create a new instance with a few arguments:
+the `I18n` class (default export) to the entry point of your app (in a react app this usually is
+`index.js`). Then create a new instance with a few arguments:
 
 * `messages`: an object with the translations; has to be structured like this:
 
@@ -49,7 +49,7 @@ create a new instance with a few arguments:
 ```
 
 * `locale`: the current locale which determines how text, numbers etc are formatted
-* Options (_optional_): all possible formatting options (see below)
+* Options (_optional_): all possible formatting options (see 'Setting options')
 
 Example:
 
@@ -80,12 +80,73 @@ const i18n = new I18n(messages, locale, options);
 
 Once instantiated, the object can be passed to components or exported to other modules.
 
-### Provider for react app
+### In a React app
 
-If using react the **i18n-kit** contains a provider component to make the `i18n` object available
-everywhere in the app (via context) without wrapping every component.
+The **i18n-kit** contains a few components that take care of most the manual steps.
 
-TBA
+#### Provider
+
+`I18nProvider` creates the of the I18n class and adds it to context in order to make it available in
+every component. Just import it to the entry point and wrap it around your app:
+
+```javascript
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { I18nProvider } from 'i18n-kit';
+import messages from './messages';
+import App from './App';
+
+const options = {
+  message: {
+    messageLocale: 'en-US'
+  },
+  currency: {
+    currency: 'USD'
+  }
+};
+
+ReactDOM.render(
+  <I18nProvider messages={messages} options={options}>
+    <App />
+  </I18nProvider>,
+  document.getElementById('root')
+);
+```
+
+Props are the same as for the I18n constructor, except locale is also optional because the provider
+will use the browser language as default value automatically.
+
+#### Higher order component
+
+To use the i18n object in the individual components you need to wrap the component in a higher order
+component for consuming the context.
+
+```javascript
+import React from 'react';
+import PropTypes from 'prop-types';
+import { getI18n } from 'i18n-kit';
+
+const ExampleComponent = ({ i18n }) => {
+  return <div>{i18n.n(3500)}</div>;
+};
+
+export default getI18n(ExampleComponent);
+```
+
+#### Component with render prop
+
+Some people prefer "render props" over higher order components. You can use it like that:
+
+```javascript
+import React from 'react';
+import { I18nGetter } from 'i18n-kit';
+
+const ExampleComponent = props => {
+  return <I18nGetter>{i18n => <div>{i18n.n(3500)}</div>}</I18nGetter>;
+};
+
+export default ExampleComponent;
+```
 
 ## Usage
 
@@ -94,24 +155,82 @@ function for every type and some options that can be added globally or locally.
 
 ### Setting options
 
-Options for all formatter can be added or changed in three ways:
+Options for all formatter can be added or changed in different ways:
 
-* passed directly for the individual format (helpful to overwrite global settings - Exception are
-  message options: currently there is no use case where local options could be helpful)
-* globally via constructor using keys for individual settings (probably standard case):
+* They can be added globally via the constructor or Provider using keys for individual settings:
 
 ```js
 new I18n(messages, locale, {number: { ... }});
 ```
 
-* globally via setter (use this if options are set in a different place in the app as where the
-  class is instantiated - should normally be avoided because it has side effects on all formatted
-  content):
+* They can be passed directly to the format function for the individual data to overwrite or
+  complement the default options. This is helpful to overwrite global settings locally - except for
+  messages (currently there is no use case where local options could be helpful for message
+  translation)
+
+<!-- * And they can be added or changed globally via the `options` setter. Use this in case you want to
+  set options in a different place than where the class is instantiated:
 
 ```js
 const i18n = new I18n(messages, locale);
 
 i18n.options = {number: { ... }};
+```
+
+> Note: The last option should normally be avoided because it mutates the instance of the object and
+> has side effects on all formatted content. -->
+
+Use the `options` getter to read global options:
+
+```js
+const options = i18n.options;
+```
+
+### Setting locale
+
+<!-- The locale can be changed during runtime. Just make sure your app gets re-rendered afterwards in
+order to apply the changes.
+ -->
+
+To change the language and formatting rules just create a new instance of the I18n class with the
+same options and the new locale.
+
+To get the current locale use the `locale` getter:
+
+> Note: Currently the locale can't be changed for an existing instance because mutating the object
+> can have unpredictable side effects e.g. when used in multiple components. Another problem is that
+> mutated objects can't be compared against earlier versions (important in React to re-render
+> components).
+
+Use the `locale` getter to get the current locale:
+
+```js
+const locale = i18n.locale;
+```
+
+#### React locale setter
+
+Since the `I18nProvider` for React takes care of creating an I18n instance it also adds an
+additional `locale` setter to this instance. It can be uses to change the language everywhere in the
+app e.g. via user input. This setter however doesn't mutate the object but changes the state in the
+provider. Therefore an new instance is created and the component tree gets re-rendered.
+
+Use the `locale` setter:
+
+```js
+const i18n = new I18n(messages, 'en-US');
+
+i18n.locale = 'de-DE';
+```
+
+In order to reset the locale to the initial default locale just assign `null` or `undefined` to the
+setter:
+
+```js
+const i18n = new I18n(messages, 'en-US');
+
+i18n.locale = 'de-DE';
+i18n.locale = null;
 ```
 
 ### Formatting number types
@@ -301,29 +420,6 @@ i18n.m(`This is {num1} test for {num2}.`, {
 
 The defined messages can be extracted from code and translated to other languages using the
 **i18n-cli**. See [here](https://github.com/rodu30/i18n-cli) for more infos.
-
-### Locale/language change
-
-The locale can be changed during runtime. Just make sure your app gets re-rendered afterwards in
-order to apply the changes.
-
-Use the `locale` setter:
-
-```js
-const i18n = new I18n(messages, 'en-US');
-
-i18n.locale = 'de-DE';
-```
-
-In order to reset the locale to the initial default locale just assign `null` or `undefined` to the
-setter:
-
-```js
-const i18n = new I18n(messages, 'en-US');
-
-i18n.locale = 'de-DE';
-i18n.locale = null;
-```
 
 ## Other use cases
 
