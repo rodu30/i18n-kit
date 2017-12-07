@@ -431,12 +431,12 @@ i18n.m(`This is {num1} test for {num2}.`, {
 ```
 
 > NOTE: If you are using the **i18n-cli** for extracting messages you need to pass the message and
-> the args to the `m`-function directly (not via variable) because variables cannot be resolved by
+> the args to the `m` function directly (not via a variable) because variables cannot be resolved by
 > the extract-script.
 
 ## Other use cases
 
-The flexibility of the design allows for a lot of different use cases. Some possible uses cases are:
+The flexibility of the design allows for a lot of different use cases. Some possible use cases are:
 
 ### Multiple settings or encapsulation
 
