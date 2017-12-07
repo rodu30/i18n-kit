@@ -40,18 +40,23 @@
     "webpack-merge": "^4.1.1"
   },
   "peerDependencies": {
-    "prop-types": "^15.6.0",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0"
+    "prop-types": "15.x",
+    "react": "16.x",
+    "react-dom": "16.x"
   },
   "babel": {
-    "plugins": ["transform-class-properties", "transform-object-rest-spread"],
+    "plugins": [
+      "transform-class-properties",
+      "transform-object-rest-spread"
+    ],
     "presets": [
       [
         "env",
         {
           "targets": {
-            "browsers": ["last 2 versions"]
+            "browsers": [
+              "last 2 versions"
+            ]
           },
           "modules": false,
           "loose": true,
@@ -64,7 +69,12 @@
   "eslintConfig": {
     "parser": "babel-eslint",
     "extends": "react-app",
-    "plugins": ["react", "jsx-a11y", "import", "flowtype"],
+    "plugins": [
+      "react",
+      "jsx-a11y",
+      "import",
+      "flowtype"
+    ],
     "env": {
       "browser": true
     },
