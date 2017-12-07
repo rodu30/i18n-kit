@@ -27,6 +27,7 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
     "eslint": "^4.11.0",
     "eslint-config-react-app": "^2.0.1",
     "eslint-plugin-flowtype": "^2.34.1",
@@ -37,6 +38,11 @@
     "rimraf": "^2.6.2",
     "webpack": "^3.8.1",
     "webpack-merge": "^4.1.1"
+  },
+  "peerDependencies": {
+    "prop-types": "^15.6.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0"
   },
   "babel": {
     "plugins": ["transform-class-properties", "transform-object-rest-spread"],
@@ -51,13 +57,14 @@
           "loose": true,
           "useBuiltIns": true
         }
-      ]
+      ],
+      "react"
     ]
   },
   "eslintConfig": {
     "parser": "babel-eslint",
     "extends": "react-app",
-    "plugins": ["react", "jsx-a11y", "import"],
+    "plugins": ["react", "jsx-a11y", "import", "flowtype"],
     "env": {
       "browser": true
     },

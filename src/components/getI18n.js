@@ -7,7 +7,7 @@ const getI18n = WrappedComponent => {
     render() {
       const { i18n } = this.context;
 
-      return <WrappedComponent {...this.props} i18n={i18n} />;
+      return <WrappedComponent i18n={i18n} {...this.props} />;
     }
   }
 
