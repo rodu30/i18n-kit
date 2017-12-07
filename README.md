@@ -6,26 +6,37 @@ A **demo** is available [here](https://github.com/rodu30/i18n-kit-demo).
 
 ## Concepts
 
-The core of the **i18n-kit** is a simple API that tries to enable three aspects of i18n in a
-project:
+The core of the **i18n-kit** is a simple API that tries to enable three aspects of i18n:
 
 * language specific formatting (localization) of numbers
 * language specific formatting (localization) of dates and time
 * translation (localization) of strings
 
-In case of the two former the library makes use of the build-in
-[global JavaScript `Intl` Object](link) and therefore doesn't need to rely on big locale files.
+In case of the two former the library makes use of the global
+[JavaScript `Intl` Object](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Intl)
+which provides build-in locale specific formatting. No big locale files necessary.
 
 The translation API follows a similar design. The goal is to make internationalization as easy as
 possible for the developer. Therefore there are no keys which need to be associated to the actual
-text and maintained somewhere else - a setting most i18n solutions use. Instead the developer
-provides just the string (and possible variables) in his language of choice. These strings can later
-be extracted from code and passed to a translation platform, a CMS or translated manually.
+text and maintained somewhere else - a setup most i18n solutions use. Instead the developer just
+provides the string (and possible variables) in one default language of his choice directly while
+coding. The defined strings can later be extracted from code and passed to a translation platform, a
+CMS or translated manually in a JSON file.
 
-This has a few advantages:
+The extraction part can be solved by the [**i18n-cli**](https://github.com/rodu30/i18n-cli). The CLI
+is designed to work with the **i18n-kit** but it is optional.
 
-* code readability: no keys where you have to guess the content
-* speed: reducing effort for i18n the code to a minimum, just code, translations can be added later
+This setup has a few advantages over other solutions:
+
+* code readability: no keys where you don`t know the actual content that is rendered later
+* speed: reducing the effort to add internationalization to the code to a minimum: "just code,
+  translations can be added later"
+* flexibility: since the solution is purely build in JavaScript and is basically just one class a
+  lot of different use cases are possible
+* maintainability: using build-in standards where possible (like the Intl object), reduces need for
+  breaking changes
+* context sensitivity: not every text means the same in every context, in order to give the
+  translator an idea about context the exact location is extracted with the string (using the CLI)
 * ...
 
 ## Getting started
@@ -150,7 +161,7 @@ export default ExampleComponent;
 
 ## Usage
 
-The API is pretty similar for all supported formats. Basically there is a individual formatting
+The API is pretty similar for all supported formats. Basically there is an individual formatting
 function for every type and some options that can be added globally or locally.
 
 ### Setting options
@@ -195,14 +206,12 @@ order to apply the changes.
 To change the language and formatting rules just create a new instance of the I18n class with the
 same options and the new locale.
 
-To get the current locale use the `locale` getter:
-
 > Note: Currently the locale can't be changed for an existing instance because mutating the object
 > can have unpredictable side effects e.g. when used in multiple components. Another problem is that
 > mutated objects can't be compared against earlier versions (important in React to re-render
 > components).
 
-Use the `locale` getter to get the current locale:
+To get the current locale use the `locale` getter:
 
 ```js
 const locale = i18n.locale;
@@ -213,12 +222,13 @@ const locale = i18n.locale;
 Since the `I18nProvider` for React takes care of creating an I18n instance it also adds an
 additional `locale` setter to this instance. It can be uses to change the language everywhere in the
 app e.g. via user input. This setter however doesn't mutate the object but changes the state in the
-provider. Therefore an new instance is created and the component tree gets re-rendered.
+provider. Therefore a new instance is created and the component-tree gets re-rendered.
 
 Use the `locale` setter:
 
 ```js
-const i18n = new I18n(messages, 'en-US');
+console.log(i18n.locale);
+// en-US
 
 i18n.locale = 'de-DE';
 ```
@@ -227,10 +237,14 @@ In order to reset the locale to the initial default locale just assign `null` or
 setter:
 
 ```js
-const i18n = new I18n(messages, 'en-US');
+console.log(i18n.locale);
+// en-US
 
 i18n.locale = 'de-DE';
 i18n.locale = null;
+
+console.log(i18n.locale);
+// en-US
 ```
 
 ### Formatting number types
@@ -267,10 +281,10 @@ other. If at least one property from the second group is defined, then the first
 
 #### Number
 
-Use the `n` function:
+Use the `n()` function:
 
 ```javascript
-const i18n = new I18n(messages>, locale);
+const i18n = new I18n(messages, locale);
 
 i18n.n(number[, options]);
 ```
@@ -279,7 +293,7 @@ Additional options: _none_
 
 #### Currency
 
-Use the `n` function:
+Use the `c()` function:
 
 ```javascript
 const i18n = new I18n(messages, locale);
@@ -298,7 +312,7 @@ Additional options:
 
 #### Percent
 
-Use the `p` function:
+Use the `p()` function:
 
 ```javascript
 const i18n = new I18n(messages, locale);
@@ -343,7 +357,7 @@ desired representations. Implementations are required to support at least the fo
 
 #### Date
 
-Use the `d` function:
+Use the `d()` function:
 
 ```javascript
 const i18n = new I18n(messages, locale);
@@ -361,11 +375,11 @@ Additional options:
   "short", "long".
 * `day`: The representation of the day. Possible values are "numeric", "2-digit".
 
-_default: year, month, day ("numeric");_ set to `undefined` to overwrite
+_Default: year, month, day (`numeric`; set to `undefined` to overwrite)_
 
 #### Time
 
-Use the `t` function:
+Use the `t()` function:
 
 ```javascript
 const i18n = new I18n(messages, locale);
@@ -379,11 +393,11 @@ Additional options:
 * `minute`: The representation of the minute. Possible values are "numeric", "2-digit".
 * `second`: The representation of the second. Possible values are "numeric", "2-digit".
 
-_default: hour, minute ("numeric");_ set to `undefined` to overwrite
+_Default: hour, minute (`numeric`; set to `undefined` to overwrite)_
 
 ### Formatting strings
 
-Options:
+#### Global options
 
 * `disableWarnings`: Set to false in order to disable all warnings about status of the translation
   (e.g. not found). This can be useful when you are not using translations e.g. in a component
@@ -393,7 +407,7 @@ Options:
 
 #### Message translation
 
-Use the `m` function:
+Use the `m()` function:
 
 ```js
 const i18n = new I18n(messages, locale);
@@ -401,8 +415,12 @@ const i18n = new I18n(messages, locale);
 i18n.m(message[, args]);
 ```
 
-The arguments-object can contain a `description` of the context (can be useful for the translator
-doesn't know the app) and values that replace placeholder after translation:
+The additional arguments-object can contain a `description` of the context (can be useful for the
+translator doesn't know the app) and values that replace placeholders after translation. Variables
+should be written in curly braces (see
+[ICU message format](http://userguide.icu-project.org/formatparse/messages)).
+
+Example:
 
 ```js
 i18n.m(`This is {num1} test for {num2}.`, {
@@ -413,15 +431,12 @@ i18n.m(`This is {num1} test for {num2}.`, {
 ```
 
 > NOTE: If you are using the **i18n-cli** for extracting messages you need to pass the message and
-> the args to the method object directly as argument (not via variable) because variables cannot be
-> interpreted by the extract-script.
-
-#### Message extracting
-
-The defined messages can be extracted from code and translated to other languages using the
-**i18n-cli**. See [here](https://github.com/rodu30/i18n-cli) for more infos.
+> the args to the `m`-function directly (not via variable) because variables cannot be resolved by
+> the extract-script.
 
 ## Other use cases
+
+The flexibility of the design allows for a lot of different use cases. Some possible uses cases are:
 
 ### Multiple settings or encapsulation
 
@@ -434,7 +449,7 @@ new instance with individual settings.
 
 ### Multiple Languages or multiple configs
 
-If you need to use multiple languages or different configs at once for some reasons just create
+If you need to use multiple languages or different configs at once for some reason just create
 separate instances of the `I18n` class and pass the same messages to it.
 
 ### No translations
