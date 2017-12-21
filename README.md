@@ -175,9 +175,7 @@ new I18n(messages, locale, {number: { ... }});
 ```
 
 * They can be passed directly to the format function for the individual data to overwrite or
-  complement the default options. This is helpful to overwrite global settings locally - except for
-  messages (currently there is no use case where local options could be helpful for message
-  translation)
+  complement the default options. This is helpful to overwrite global settings locally
 
 <!-- * And they can be added or changed globally via the `options` setter. Use this in case you want to
   set options in a different place than where the class is instantiated:
@@ -397,7 +395,7 @@ _Default: hour, minute (`numeric`; set to `undefined` to overwrite)_
 
 ### Formatting strings
 
-#### Global options
+#### Options
 
 * `disableWarnings`: Set to false in order to disable all warnings about status of the translation
   (e.g. not found). This can be useful when you are not using translations e.g. in a component
@@ -416,7 +414,7 @@ i18n.m(message[, args]);
 ```
 
 The additional arguments-object can contain a `description` of the context (can be useful for the
-translator doesn't know the app) and values that replace placeholders after translation. Variables
+translator doesn't know the app), an `options` object and values that replace placeholders after translation. Variables
 should be written in curly braces (see
 [ICU message format](http://userguide.icu-project.org/formatparse/messages)).
 
