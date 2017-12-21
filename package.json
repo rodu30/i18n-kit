@@ -1,6 +1,6 @@
 {
   "name": "i18n-kit",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Library to provide basic i18n functions for JavaScript apps",
   "main": "dist/i18n-kit.js",
   "scripts": {
