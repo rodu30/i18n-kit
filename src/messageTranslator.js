@@ -1,20 +1,4 @@
 /**
- * Generates a new string from the provided message containing placeholders and an object with values,
- * use ICU string syntax
- * @param {string} message
- * @param {object} values variables for placeholder in message
- * @returns {string}
- */
-export const format = (message, values = {}) => {
-  let newMessage = message;
-  Object.entries(values).forEach(([key, value]) => {
-    const pattern = new RegExp(`{${key}}`, 'g');
-    newMessage = newMessage.replace(pattern, value);
-  });
-  return newMessage;
-};
-
-/**
  * Generates a key from a message string
  * @param {string} message
  * @returns {string}
@@ -77,9 +61,7 @@ export const translate = (locale, messages, message, options = {}) => {
     // ...return default (+ warning)
     if (!disableWarnings) {
       console.warn(
-        `Warning: Displaying default message\n"${
-          message
-        }" has not been translated to requested locale "${locale}".`
+        `Warning: Displaying default message\n"${message}" has not been translated to requested locale "${locale}".`
       );
     }
     return message;

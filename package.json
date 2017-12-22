@@ -1,6 +1,6 @@
 {
   "name": "i18n-kit",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Library to provide basic i18n functions for JavaScript apps",
   "main": "dist/i18n-kit.js",
   "scripts": {
@@ -45,18 +45,13 @@
     "react-dom": "16.x"
   },
   "babel": {
-    "plugins": [
-      "transform-class-properties",
-      "transform-object-rest-spread"
-    ],
+    "plugins": ["transform-class-properties", "transform-object-rest-spread"],
     "presets": [
       [
         "env",
         {
           "targets": {
-            "browsers": [
-              "last 2 versions"
-            ]
+            "browsers": ["last 2 versions"]
           },
           "modules": false,
           "loose": true,
@@ -69,12 +64,7 @@
   "eslintConfig": {
     "parser": "babel-eslint",
     "extends": "react-app",
-    "plugins": [
-      "react",
-      "jsx-a11y",
-      "import",
-      "flowtype"
-    ],
+    "plugins": ["react", "jsx-a11y", "import", "flowtype"],
     "env": {
       "browser": true
     },
@@ -90,5 +80,8 @@
         }
       ]
     }
+  },
+  "dependencies": {
+    "messageformat": "^1.1.0"
   }
 }

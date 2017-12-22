@@ -177,18 +177,6 @@ new I18n(messages, locale, {number: { ... }});
 * They can be passed directly to the format function for the individual data to overwrite or
   complement the default options. This is helpful to overwrite global settings locally
 
-<!-- * And they can be added or changed globally via the `options` setter. Use this in case you want to
-  set options in a different place than where the class is instantiated:
-
-```js
-const i18n = new I18n(messages, locale);
-
-i18n.options = {number: { ... }};
-```
-
-> Note: The last option should normally be avoided because it mutates the instance of the object and
-> has side effects on all formatted content. -->
-
 Use the `options` getter to read global options:
 
 ```js
@@ -413,10 +401,8 @@ const i18n = new I18n(messages, locale);
 i18n.m(message[, args]);
 ```
 
-The additional arguments-object can contain a `description` of the context (can be useful for the
-translator doesn't know the app), an `options` object and values that replace placeholders after translation. Variables
-should be written in curly braces (see
-[ICU message format](http://userguide.icu-project.org/formatparse/messages)).
+In order to enable placeholders, plurals and genders use the [ICU message syntax](http://userguide.icu-project.org/formatparse/messages)) in the message string (e.g. placholders in curly braces). The i18n-kit has a parser for this international standard integrated. Pass the values, current gender or current plural within the additional arguments-object. This object can also contain a `description` of the context (can be useful for the
+translator doesn't know the app), an `options` object and values that replace placeholders after translation.
 
 Example:
 

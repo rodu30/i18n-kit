@@ -1,4 +1,5 @@
-import * as messageFormatter from './messageFormatter';
+import * as messageTranslator from './messageTranslator';
+import MessageFormat from 'messageformat';
 
 /**
  * Class for internalization and localization of numbers (plain numbers, currency, percent), dates objects (dates, time) and strings (messages with vars)
@@ -37,6 +38,8 @@ export default class I18n {
     this._percentFormatter = new Intl.NumberFormat(this._locale, this._options.percent);
     this._dateFormatter = new Intl.DateTimeFormat(this._locale, this._options.date);
     this._timeFormatter = new Intl.DateTimeFormat(this._locale, this._options.time);
+    // Create instance for message formatter
+    this._messageFormatter = new MessageFormat(this._locale);
   }
 
   // --- getters ---
@@ -48,7 +51,7 @@ export default class I18n {
    * @returns {boolean}
    */
   hasMessage = message => {
-    if (messageFormatter.get(this._locale, this._messages, message)) return true;
+    if (messageTranslator.get(this._locale, this._messages, message)) return true;
     return false;
   };
 
@@ -160,16 +163,19 @@ export default class I18n {
    * Formats and translates a string, depending on user's current locale
    * (returns the provided message if current locale is the message locale or if no translation exists)
    * @memberof I18n
-   * @param {string} message
-   * @param {object} args (description, options, values)
+   * @param {string} message (use ICU string syntax)
+   * @param {object} args (description, options, values, plurals or genders)
    * @returns {string}
    */
   m = (message, args = {}) => {
     const { description, options, ...values } = args;
-    const translatedMsg = messageFormatter.translate(this._locale, this._messages, message, {
+    const translatedMsg = messageTranslator.translate(this._locale, this._messages, message, {
       ...this._options.message,
       ...options,
     });
-    return messageFormatter.format(translatedMsg, values);
+    // Return message if no values are provided
+    if (Object.keys(values).length === 0) return translatedMsg;
+    // Return new formatted message
+    return this._messageFormatter.compile(translatedMsg)(values);
   };
 }
