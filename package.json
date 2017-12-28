@@ -1,13 +1,13 @@
 {
   "name": "i18n-kit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Library to provide basic i18n functions for JavaScript apps",
   "main": "dist/i18n-kit.js",
   "scripts": {
     "build:dev": "rimraf dist && webpack --env=dev --progress --hide-modules",
     "build:dist": "rimraf dist && webpack --env=prod --progress --profile --colors --hide-modules",
     "watch": "webpack --env=dev --watch --progress --colors --hide-modules",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "Roman Duhr <roman.duhr@meplato.com>",
   "license": "MIT",
@@ -23,6 +23,7 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-eslint": "^7.2.3",
+    "babel-jest": "^22.0.4",
     "babel-loader": "^7.1.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
@@ -34,7 +35,9 @@
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.5.1",
+    "jest": "^22.0.4",
     "prettier-eslint": "^8.2.2",
+    "regenerator-runtime": "^0.11.1",
     "rimraf": "^2.6.2",
     "webpack": "^3.8.1",
     "webpack-merge": "^4.1.1"
@@ -59,7 +62,13 @@
         }
       ],
       "react"
-    ]
+    ],
+    "env": {
+      "test": {
+        "presets": ["env", "react"],
+        "plugins": ["transform-class-properties", "transform-object-rest-spread"]
+      }
+    }
   },
   "eslintConfig": {
     "parser": "babel-eslint",
