@@ -10,19 +10,33 @@ const generateKey = message => {
 };
 
 /**
- * Return message if message-key can be found in messages and if message flag is not 'MISSING'
+ * Returns message if message-key can be found in messages object and if message flag is not 'MISSING'
  * otherwise returns null
- * @param {string} locale
  * @param {object} messages
  * @param {string} message
  * @returns {string}
  */
-export const get = (locale, messages, message) => {
+export const getMessage = (messages, message) => {
   const msgKey = generateKey(message);
-  const msgObj = Object.entries(messages[locale]).find(
+  const msgArr = Object.entries(messages).find(
     ([key, value]) => key === msgKey && value.message && value.flag !== 'MISSING'
   );
-  if (msgObj) return msgObj[1].message;
+  if (msgArr) return msgArr[1].message;
+  return null;
+};
+
+/**
+ * Returns messages for a given locale (if locale can be found; Note: matching is case sensitive),
+ * if locale only contains a language tag (lowercases) the first match of language is used
+ * @param {string} locale
+ * @param {object} messages
+ * @returns {string}
+ */
+export const getMessages = (locale, messages) => {
+  const msgsArr = Object.entries(messages).find(
+    ([key, value]) => (key.indexOf(locale) === 0 ? value : null)
+  );
+  if (msgsArr) return msgsArr[1];
   return null;
 };
 
@@ -40,8 +54,10 @@ export const get = (locale, messages, message) => {
 export const translate = (locale, messages, message, options = {}) => {
   const { disableWarnings, messageLocale } = options;
 
+  const messagesPerLocale = getMessages(locale, messages);
+
   // If requested locale doesn't exist yet return default (+ warning)
-  if (!messages[locale]) {
+  if (!messagesPerLocale) {
     if (!disableWarnings) {
       console.warn(
         `Warning: Displaying default message\nLocale "${locale}" is missing in list of locales.`
@@ -51,7 +67,7 @@ export const translate = (locale, messages, message, options = {}) => {
   }
 
   // Check if message exists for current locale
-  const existingMessage = get(locale, messages, message);
+  const existingMessage = getMessage(messagesPerLocale, message);
 
   // If message key doesn't exist in requested locale...
   if (!existingMessage) {

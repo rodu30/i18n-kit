@@ -45,13 +45,19 @@ export default class I18n {
   // --- getters ---
 
   /**
-   * Returns true if provided message exists in current locale
+   * Returns true if provided message exists in current locale or language (if locale only contains language tag)
    * @memberof I18n
    * @param {string} message
    * @returns {boolean}
    */
   hasMessage = message => {
-    if (messageTranslator.get(this._locale, this._messages, message)) return true;
+    if (
+      messageTranslator.getMessage(
+        messageTranslator.getMessages(this._locale, this._messages),
+        message
+      )
+    )
+      return true;
     return false;
   };
 
