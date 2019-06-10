@@ -4,13 +4,21 @@ This is a library to add basic i18n functionality to JavaScript apps.
 
 A **demo** is available [here](https://github.com/rodu30/i18n-kit-demo).
 
+Content:
+
+1. [Concepts](#concepts)
+2. [Getting Started](#getting-started)
+3. [Usage](#usage)
+4. [Other use cases](#other-use-cases)
+5. [Acknowledgment](#acknowledgment)
+
 ## Concepts
 
 The core of the **i18n-kit** is a simple API that tries to enable three aspects of i18n:
 
-* language specific formatting (localization) of numbers
-* language specific formatting (localization) of dates and time
-* translation (localization) of strings
+- language specific formatting (localization) of numbers
+- language specific formatting (localization) of dates and time
+- translation (localization) of strings
 
 In case of the two former the library makes use of the global
 [JavaScript `Intl` Object](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Intl)
@@ -28,20 +36,20 @@ is designed to work with the **i18n-kit** but it is optional.
 
 This setup has a few advantages over other solutions:
 
-* code readability: no keys where you don`t know the actual content that is rendered later
-* speed: reducing the effort to add internationalization to the code to a minimum: "just code,
+- code readability: no keys where you don`t know the actual content that is rendered later
+- speed: reducing the effort to add internationalization to the code to a minimum: "just code,
   translations can be added later"
-* flexibility: since the solution is purely build in JavaScript and is basically just one class a
+- flexibility: since the solution is purely build in JavaScript and is basically just one class a
   lot of different use cases are possible
-* maintainability: using build-in standards where possible (like the Intl object), reduces need for
+- maintainability: using build-in standards where possible (like the Intl object), reduces need for
   breaking changes
-* context sensitivity: not every text means the same in every context, in order to give the
+- context sensitivity: not every text means the same in every context, in order to give the
   translator an idea about context the exact location is extracted with the string (using the CLI)
-* ...
+- ...
 
 ## Getting started
 
-Add **i18n-kit** to your project:
+Add the **i18n-kit** to your Node.js project:
 
 ```bash
 $ npm install --save git+ssh://git@github.com:rodu30/i18n-kit.git
@@ -53,14 +61,14 @@ In order to make the same language and formatting settings available everywhere 
 the `I18n` class (default export) to the entry point of your app (in a react app this usually is
 `index.js`). Then create a new instance with a few arguments:
 
-* `messages`: an object with the translations; has to be structured like this:
+- `messages`: an object with the translations; has to be structured like this:
 
 ```javascript
 {[locale]: { [key]: { message: ... }}}
 ```
 
-* `locale`: the current locale which determines how text, numbers etc are formatted
-* Options (_optional_): all possible formatting options (see 'Setting options')
+- `locale`: the current locale which determines how text, numbers etc are formatted
+- Options (_optional_): all possible formatting options (see 'Setting options')
 
 Example:
 
@@ -168,13 +176,13 @@ function for every type and some options that can be added globally or locally.
 
 Options for all formatter can be added or changed in different ways:
 
-* They can be added globally via the constructor or Provider using keys for individual settings:
+- They can be added globally via the constructor or Provider using keys for individual settings:
 
 ```js
 new I18n(messages, locale, {number: { ... }});
 ```
 
-* They can be passed directly to the format function for the individual data to overwrite or
+- They can be passed directly to the format function for the individual data to overwrite or
   complement the default options. This is helpful to overwrite global settings locally
 
 Use the `options` getter to read global options:
@@ -237,29 +245,29 @@ console.log(i18n.locale);
 
 Common options _(can be used for every number style)_:
 
-* `localeMatcher`: The locale matching algorithm to use. Possible values are "lookup" and "best
+- `localeMatcher`: The locale matching algorithm to use. Possible values are "lookup" and "best
   fit"; the default is "best fit". For information about this option, see the Intl page.
-* `useGrouping`: Whether to use grouping separators, such as thousands separators or
+- `useGrouping`: Whether to use grouping separators, such as thousands separators or
   thousand/lakh/crore separators. Possible values are true and false; the default is true.
 
 The following properties fall into two groups: minimumIntegerDigits, minimumFractionDigits, and
 maximumFractionDigits in one group, minimumSignificantDigits and maximumSignificantDigits in the
 other. If at least one property from the second group is defined, then the first group is ignored.
 
-* `minimumIntegerDigits`: The minimum number of integer digits to use. Possible values are from 1 to
+- `minimumIntegerDigits`: The minimum number of integer digits to use. Possible values are from 1 to
   21; the default is 1.
-* `minimumFractionDigits`: The minimum number of fraction digits to use. Possible values are from 0
+- `minimumFractionDigits`: The minimum number of fraction digits to use. Possible values are from 0
   to 20; the default for plain number and percent formatting is 0; the default for currency
   formatting is the number of minor unit digits provided by the ISO 4217 currency code list (2 if
   the list doesn't provide that information).
-* `maximumFractionDigits`: The maximum number of fraction digits to use. Possible values are from 0
+- `maximumFractionDigits`: The maximum number of fraction digits to use. Possible values are from 0
   to 20; the default for plain number formatting is the larger of minimumFractionDigits and 3; the
   default for currency formatting is the larger of minimumFractionDigits and the number of minor
   unit digits provided by the ISO 4217 currency code list (2 if the list doesn't provide that
   information); the default for percent formatting is the larger of minimumFractionDigits and 0.
-* `minimumSignificantDigits`: The minimum number of significant digits to use. Possible values are
+- `minimumSignificantDigits`: The minimum number of significant digits to use. Possible values are
   from 1 to 21; the default is 1.
-* `maximumSignificantDigits`: The maximum number of significant digits to use. Possible values are
+- `maximumSignificantDigits`: The maximum number of significant digits to use. Possible values are
   from 1 to 21; the default is minimumSignificantDigits.
 
 > Taken from
@@ -289,10 +297,10 @@ i18n.c(sum[, options]);
 
 Additional options:
 
-* `currency`: The currency to use in currency formatting. Possible values are the ISO 4217 currency
+- `currency`: The currency to use in currency formatting. Possible values are the ISO 4217 currency
   codes, such as "USD" for the US dollar, "EUR" for the euro, or "CNY" for the Chinese RMB — see the
   Current currency & funds code list. _Default is "EUR"._
-* `currencyDisplay`: How to display the currency in currency formatting. Possible values are
+- `currencyDisplay`: How to display the currency in currency formatting. Possible values are
   "symbol" to use a localized currency symbol such as €, "code" to use the ISO currency code, "name"
   to use a localized currency name such as "dollar"; the default is "symbol".
 
@@ -312,31 +320,31 @@ Additional options: _none_
 
 Common options _(can be used for every dateTime style)_:
 
-* `localeMatcher`: The locale matching algorithm to use. Possible values are "lookup" and "best
+- `localeMatcher`: The locale matching algorithm to use. Possible values are "lookup" and "best
   fit"; the default is "best fit". For information about this option, see the Intl page.
-* `timeZone`: The time zone to use. The only value implementations must recognize is "UTC"; the
+- `timeZone`: The time zone to use. The only value implementations must recognize is "UTC"; the
   default is the runtime's default time zone. Implementations may also recognize the time zone names
   of the IANA time zone database, such as "Asia/Shanghai", "Asia/Kolkata", "America/New_York".
-* `hour12`: Whether to use 12-hour time (as opposed to 24-hour time). Possible values are true and
+- `hour12`: Whether to use 12-hour time (as opposed to 24-hour time). Possible values are true and
   false; the default is locale dependent. This option overrides the hc language tag and/or the
   hourCycle option in case both are present.
-* `hourCycle`: The hour cycle to use. Possible values are "h11", "h12", "h23", or "h24". This option
+- `hourCycle`: The hour cycle to use. Possible values are "h11", "h12", "h23", or "h24". This option
   overrides the hc language tag, if both are present, and the hour12 option takes precedence in case
   both options have been specified.
-* `formatMatcher`: The format matching algorithm to use. Possible values are "basic" and "best fit";
+- `formatMatcher`: The format matching algorithm to use. Possible values are "basic" and "best fit";
   the default is "best fit". See the following paragraphs for information about the use of this
   property.
 
 The following properties describe the date-time components to use in formatted output, and their
 desired representations. Implementations are required to support at least the following subsets:
 
-* weekday, year, month, day, hour, minute, second
-* weekday, year, month, day
-* year, month, day
-* year, month
-* month, day
-* hour, minute, second
-* hour, minute
+- weekday, year, month, day, hour, minute, second
+- weekday, year, month, day
+- year, month, day
+- year, month
+- month, day
+- hour, minute, second
+- hour, minute
 
 > Taken from
 > [`Intl.DateTimeFormat` MDN page](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat)
@@ -353,13 +361,13 @@ i18n.d(date[, options]);
 
 Additional options:
 
-* `timeZoneName`: The representation of the time zone name. Possible values are "short", "long".
-* `weekday`: The representation of the weekday. Possible values are "narrow", "short", "long".
-* `era`: The representation of the era. Possible values are "narrow", "short", "long".
-* `year`: The representation of the year. Possible values are "numeric", "2-digit".
-* `month`: The representation of the month. Possible values are "numeric", "2-digit", "narrow",
+- `timeZoneName`: The representation of the time zone name. Possible values are "short", "long".
+- `weekday`: The representation of the weekday. Possible values are "narrow", "short", "long".
+- `era`: The representation of the era. Possible values are "narrow", "short", "long".
+- `year`: The representation of the year. Possible values are "numeric", "2-digit".
+- `month`: The representation of the month. Possible values are "numeric", "2-digit", "narrow",
   "short", "long".
-* `day`: The representation of the day. Possible values are "numeric", "2-digit".
+- `day`: The representation of the day. Possible values are "numeric", "2-digit".
 
 _Default: year, month, day (`numeric`; set to `undefined` to overwrite)_
 
@@ -375,9 +383,9 @@ i18n.t(date[, options]);
 
 Additional options:
 
-* `hour`: The representation of the hour. Possible values are "numeric", "2-digit".
-* `minute`: The representation of the minute. Possible values are "numeric", "2-digit".
-* `second`: The representation of the second. Possible values are "numeric", "2-digit".
+- `hour`: The representation of the hour. Possible values are "numeric", "2-digit".
+- `minute`: The representation of the minute. Possible values are "numeric", "2-digit".
+- `second`: The representation of the second. Possible values are "numeric", "2-digit".
 
 _Default: hour, minute (`numeric`; set to `undefined` to overwrite)_
 
@@ -385,10 +393,10 @@ _Default: hour, minute (`numeric`; set to `undefined` to overwrite)_
 
 #### Options
 
-* `disableWarnings`: Set to false in order to disable all warnings about status of the translation
+- `disableWarnings`: Set to false in order to disable all warnings about status of the translation
   (e.g. not found). This can be useful when you are not using translations e.g. in a component
   library.
-* `messageLocale`: Provide the locale for default messages (no warning is printed if current locale
+- `messageLocale`: Provide the locale for default messages (no warning is printed if current locale
   is the same as default).
 
 #### Message translation
@@ -441,3 +449,7 @@ separate instances of the `I18n` class and pass the same messages to it.
 In some cases you may want to make your app i18n-ready but don't want to add translations yet. In
 this case just instantiate the class with an empty object instead of messages and set the
 `disbaleWarnings` option for messages to avoid warnings about missing translations
+
+## Acknowledgment
+
+This app was created as part of a graduation project at [Beuth University of Applied Sciences Berlin](https://www.beuth-hochschule.de/) and [Meplato GmbH](https://meplato.com/).
